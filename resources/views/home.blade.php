@@ -8,11 +8,6 @@
 <body>
     <div>
         <h1>Welcome to Chatbot</h1>
-        
-        <div>
-            <input type="text" id="prompt" placeholder="Enter your prompt here..." />
-            <button id="submit-prompt">Submit</button>
-        </div>
 
         <div>
             <a href="{{ route('register.form') }}">
@@ -22,29 +17,23 @@
                 <button>Login</button>
             </a>
         </div>
-        
-        <div id="response" style="margin-top: 20px;"></div>
-    </div>
 
-    <script>
-        document.getElementById('submit-prompt').addEventListener('click', function() {
-            const prompt = document.getElementById('prompt').value;
+        <h1>Chatbot</h1>
+    
+        <form id="chatForm" action="{{ route('chat') }}" method="POST">
+            @csrf
+            <label for="prompt">Enter your prompt:</label>
+            <input type="text" id="prompt" name="prompt" required>
+            
+            <button type="submit">Submit</button>
+        </form>
 
-            fetch('/api/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                },
-                body: JSON.stringify({ prompt: prompt })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('response').innerText = data.response;
-            })
-            .catch(error => console.error('Error:', error));
-        });
-    </script>
+        <!-- Response display container -->
+        <div id="responseContainer">
+            <h3>AI Response:</h3>
+            <textarea id="responseMessage" rows="10" cols="50" readonly>{{ $responseContent ?? '' }}</textarea>
+        </div>
+        </div>
 </body>
 </html>
 

@@ -22,14 +22,16 @@ class UserController extends Controller
 
 public function showMainForm()
 {
-    // Fetch previous conversations for the logged-in user
-    //$conversations = Conversation::where('user_id', auth()->id())->get();
+    if (Auth::check()) {
+        $user = Auth::user();
+        $conversations = Conversation::with('messages')->where('user_id', $user->id)->get();
 
-    
-    if (!Auth::check()) {
-        return redirect()->route('user.login')->with('error', 'You must be logged in to access the main form.');
+        return view('mainform', [
+            'conversations' => $conversations
+        ]);
     }
-    return view('mainform');
+
+    return redirect()->route('user.login');
 }
 
     // Obrada registracije korisnika

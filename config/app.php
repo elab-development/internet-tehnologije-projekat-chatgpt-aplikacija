@@ -123,4 +123,9 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'cloudflare' => [
+        'api_token' => env('CLOUDFLARE_API'),
+        'url' => env('CLOUDFLARE_URL'),
+],
+
 ];
