@@ -30,6 +30,18 @@
     </div>
 
     <h2>Previous Conversations</h2>
+    @if(isset($conversations))
+        @foreach($conversations as $conversation)
+            <div>
+                <h3>Title: <input type="text" name="title" value="{{ $conversation->title }}" readonly></h3>
+                <ul>
+                    @foreach($conversation->messages as $message)
+                        <li>{{ $message->content }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endforeach
+    @endif
 
 
     <form action="{{ route('logout') }}" method="POST">
