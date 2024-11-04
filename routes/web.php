@@ -16,6 +16,8 @@ Route::get('/mainform', [UserController::class, 'showMainForm'])->name('mainform
 
 
 Route::post('/chat', [ChatController::class, 'generateResponse'])->name('chat');
+Route::patch('/chat/edit/{id}', [ChatController::class, 'editConversation'])->name('chat.edit')->middleware('auth');
+Route::get('/mainform', [ChatController::class, 'showPreviousConversations'])->name('previous.conversations')->middleware('auth');
 
 
 

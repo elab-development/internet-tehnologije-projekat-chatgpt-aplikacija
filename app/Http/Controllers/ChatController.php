@@ -72,6 +72,34 @@ class ChatController extends Controller
         return view('home', ['responseContent' => $responseContent]);
     }
 
+    public function showPreviousConversations()
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+            $conversations = Conversation::with('messages')->where('user_id', $user->id)->get();
+
+            return view('mainform', [
+                'conversations' => $conversations
+            ]);
+        }
+
+    }
+
+
+    public function editConversation(Request $request, $id)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+        ]);
+
+        $conversation = Conversation::findOrFail($id);
+        $conversation->title = $request->input('title');
+        $conversation->save();
+
+        // Redirect to the main form route
+        return redirect()->route('previous.conversations')->with('success', 'Conversation updated successfully.');
+    }
+
 
     public function showMainForm()
     {

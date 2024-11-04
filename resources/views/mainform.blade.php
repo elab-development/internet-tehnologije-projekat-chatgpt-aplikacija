@@ -39,6 +39,12 @@
                         <li>{{ $message->content }}</li>
                     @endforeach
                 </ul>
+                <form method="POST" action="{{ route('chat.edit', $conversation->id) }}">
+                    @csrf
+                    <input type="hidden" name="_method" value="PATCH">
+                    <input type="text" name="title" value="{{ $conversation->title }}" required>
+                    <button type="submit">Edit</button>
+                </form>
             </div>
         @endforeach
     @endif
