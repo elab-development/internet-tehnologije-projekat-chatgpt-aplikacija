@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Conversation;
 use App\Models\Message;
 use Illuminate\Support\Facades\Log;
+
 class ChatController extends Controller
 {
     public function generateResponse(Request $request)
@@ -40,6 +41,29 @@ class ChatController extends Controller
 
         if ($response->successful()) {
             $responseContent = $response->json('result.response');
+            if (Auth::check()) {
+                // Save conversation and message for logged-in users
+                $user = Auth::user();
+                $conversation = Conversation::create([
+                    'user_id' => $user->id,
+                    'title' => $userPrompt, // Customize the title if needed
+                ]);
+
+                // User message
+                Message::create([
+                    'conversation_id' => $conversation->id,
+                    'user_id' => $user->id,
+                    'content' => $responseContent,
+                ]);
+
+                // Fetch previous conversations
+                $conversations = Conversation::with('messages')->where('user_id', $user->id)->get();
+
+                return view('mainform', [
+                    'responseContent' => $responseContent,
+                    'conversations' => $conversations // Pass previous conversations
+                ]);
+            }
 
         } else {
             $responseContent = 'An error occurred while processing your request.';
