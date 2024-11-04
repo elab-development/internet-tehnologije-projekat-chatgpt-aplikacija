@@ -45,6 +45,12 @@
                     <input type="text" name="title" value="{{ $conversation->title }}" required>
                     <button type="submit">Edit</button>
                 </form>
+
+                <form method="POST" action="{{ route('chat.delete', $conversation->id) }}" style="display:inline;">
+                    @csrf
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" onclick="return confirm('Are you sure you want to delete this conversation?');">Delete</button>
+                </form>
             </div>
         @endforeach
     @endif

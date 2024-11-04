@@ -42,26 +42,25 @@ class ChatController extends Controller
         if ($response->successful()) {
             $responseContent = $response->json('result.response');
             if (Auth::check()) {
-                // Save conversation and message for logged-in users
+                
                 $user = Auth::user();
                 $conversation = Conversation::create([
                     'user_id' => $user->id,
-                    'title' => $userPrompt, // Customize the title if needed
+                    'title' => $userPrompt, 
                 ]);
 
-                // User message
+                
                 Message::create([
                     'conversation_id' => $conversation->id,
                     'user_id' => $user->id,
                     'content' => $responseContent,
                 ]);
 
-                // Fetch previous conversations
                 $conversations = Conversation::with('messages')->where('user_id', $user->id)->get();
 
                 return view('mainform', [
                     'responseContent' => $responseContent,
-                    'conversations' => $conversations // Pass previous conversations
+                    'conversations' => $conversations 
                 ]);
             }
 
@@ -96,8 +95,16 @@ class ChatController extends Controller
         $conversation->title = $request->input('title');
         $conversation->save();
 
-        // Redirect to the main form route
+        
         return redirect()->route('previous.conversations')->with('success', 'Conversation updated successfully.');
+    }
+
+    public function deleteConversation($id)
+    {
+        $conversation = Conversation::findOrFail($id);
+        $conversation->delete();
+
+        return redirect()->route('previous.conversations')->with('success', 'Conversation deleted successfully.');
     }
 
 
