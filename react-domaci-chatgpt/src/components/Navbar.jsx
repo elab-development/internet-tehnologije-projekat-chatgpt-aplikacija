@@ -1,13 +1,18 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-function Navbar() {
+function Navbar({ isLoggedIn, setIsLoggedIn }) {
+	const handleLogout = () => {
+		setIsLoggedIn(false);
+	};
+
 	return (
 		<nav className="navbar navbar-expand-lg navbar-dark bg-dark">
 			<div className="container-fluid">
 				<Link className="navbar-brand" to="/">
-					ChatGPT App
+					Chatbot
 				</Link>
+
 				<button
 					className="navbar-toggler"
 					type="button"
@@ -19,6 +24,7 @@ function Navbar() {
 				>
 					<span className="navbar-toggler-icon"></span>
 				</button>
+
 				<div className="collapse navbar-collapse" id="navbarNav">
 					<ul className="navbar-nav ms-auto">
 						<li className="nav-item">
@@ -27,15 +33,31 @@ function Navbar() {
 							</Link>
 						</li>
 						<li className="nav-item">
-							<Link className="nav-link" to="/chat">
-								Chat
-							</Link>
-						</li>
-						<li className="nav-item">
 							<Link className="nav-link" to="/about">
 								About
 							</Link>
 						</li>
+						<li className="nav-item">
+							<Link className="nav-link" to={isLoggedIn ? "/chat" : "/login"}>
+								Chat
+							</Link>
+						</li>
+						{!isLoggedIn ? (
+							<li className="nav-item">
+								<Link className="nav-link" to="/login">
+									Login
+								</Link>
+							</li>
+						) : (
+							<li className="nav-item">
+								<button
+									className="nav-link btn btn-link"
+									onClick={handleLogout}
+								>
+									Logout
+								</button>
+							</li>
+						)}
 					</ul>
 				</div>
 			</div>
