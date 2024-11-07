@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Button from "./Button";
 
 function Navbar({ isLoggedIn, setIsLoggedIn }) {
 	const handleLogout = () => {
@@ -33,13 +34,13 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
 							</Link>
 						</li>
 						<li className="nav-item">
-							<Link className="nav-link" to="/about">
-								About
+							<Link className="nav-link" to={isLoggedIn ? "/chat" : "/login"}>
+								Chat
 							</Link>
 						</li>
 						<li className="nav-item">
-							<Link className="nav-link" to={isLoggedIn ? "/chat" : "/login"}>
-								Chat
+							<Link className="nav-link" to="/about">
+								About
 							</Link>
 						</li>
 						{!isLoggedIn ? (
@@ -50,12 +51,11 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
 							</li>
 						) : (
 							<li className="nav-item">
-								<button
-									className="nav-link btn btn-link"
+								<Button
+									label="Logout"
 									onClick={handleLogout}
-								>
-									Logout
-								</button>
+									className="nav-link btn-link"
+								/>
 							</li>
 						)}
 					</ul>
