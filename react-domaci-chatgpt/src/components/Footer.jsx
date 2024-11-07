@@ -2,8 +2,8 @@ import React from "react";
 
 function Footer() {
 	return (
-		<footer className="bg-dark text-white text-center py-3 mt-5">
-			<p>&copy; 2024 ChatGPT App. All rights reserved.</p>
+		<footer className="bg-dark text-white d-flex py-2 justify-content-center align-items-center">
+			<p className="mb-0">&copy; 2024 ChatBot created by Mihajlo & Bogdan.</p>
 		</footer>
 	);
 }
