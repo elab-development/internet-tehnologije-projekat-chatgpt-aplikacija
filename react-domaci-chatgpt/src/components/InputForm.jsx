@@ -25,7 +25,7 @@ function InputForm({ onSubmit }) {
 					value={input}
 					onChange={handleChange}
 				/>
-				<button className="btn btn-primary" type="submit">
+				<button className="btn btn-success" type="submit">
 					Send
 				</button>
 			</div>
