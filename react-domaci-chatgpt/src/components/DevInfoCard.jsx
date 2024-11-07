@@ -12,6 +12,7 @@ const AboutCard = ({ pic, name, text }) => {
 					className="img-fluid rounded-circle w-50 mx-auto mt-3"
 					style={{ height: "200px", objectFit: "cover" }}
 				/>
+
 				<Card.Body>
 					<Card.Title className="text-success">{name}</Card.Title>
 					<Card.Text className="text-muted">{text}</Card.Text>
