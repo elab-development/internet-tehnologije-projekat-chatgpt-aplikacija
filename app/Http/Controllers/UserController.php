@@ -7,82 +7,127 @@ use App\Models\Conversation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
-    public function showRegistrationForm()
-    {
-        return view('register');
-    }
 
-    public function showLoginForm()
-{
-    return view('login'); 
-}
-
-public function showMainForm()
-{
-    if (Auth::check()) {
-        $user = Auth::user();
-        $conversations = Conversation::with('messages')->where('user_id', $user->id)->get();
-
-        return view('mainform', [
-            'conversations' => $conversations
-        ]);
-    }
-
-    return redirect()->route('user.login');
-}
-
-    // Obrada registracije korisnika
+    
     public function register(Request $request)
-    {
-        // Validacija podataka
-        $request->validate([
+{
+    try {
+        
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users', 
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        // Kreiranje korisnika
+        
         $user = User::create([
-            'name' => $request->name,
-            'username' => $request->username, 
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name' => $validated['name'],
+            'username' => $validated['username'], 
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
         ]);
 
-        // Redirektovanje korisnika na login formu
         if ($user) {
-            return redirect()->route('user.login')->with('success', 'Uspešno ste registrovani!');
-        } else {
-            return back()->with('error', 'Došlo je do greške prilikom registracije.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Registration successful',
+            ], 201); 
         }
 
-    }
+        return response()->json([
+            'success' => false,
+            'message' => 'Registration failed'
+        ], 500);
 
-    public function login(Request $request)
-    {
-        
-        $request->validate([
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation failed',
+            'errors' => $e->errors()
+        ], 422); 
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Registration failed',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function login(Request $request)
+{
+    try {
+        $validated = $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
 
+        if (Auth::attempt($validated)) {
+            $user = Auth::user();
+            $token = $user->createToken('auth_token')->plainTextToken;
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Login successful',
+                'user' => $user,
+                'token' => $token
+            ], 200);
+        }
+    
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid credentials'
+        ], 401);
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation failed',
+            'errors' => $e->errors()
+        ], 422);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Login failed',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function logout(Request $request)
+{
+    try {
+        // Ensure the user is authenticated
+        $user = Auth::user();
         
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-           
-            return redirect()->intended('mainform')->with('success', 'You are logged in!');
+        if ($user) {
+            // Revoke the user's current token
+            $user->currentAccessToken()->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Successfully logged out'
+            ], 200);
         }
 
-        
-        return redirect()->back()->withErrors(['email' => 'Invalid credentials'])->withInput();
-    }
+        return response()->json([
+            'success' => false,
+            'message' => 'Unauthorized'
+        ], 401);
+    } catch (\Exception $e) {
+        // Log the exception for debugging
+        Log::error('Logout error:', ['error' => $e->getMessage()]);
 
-    public function logout(Request $request)
-{
-    Auth::logout();
-    return redirect()->route('user.login')->with('success', 'You have been logged out.');
+        return response()->json([
+            'success' => false,
+            'message' => 'Logout failed',
+            'error' => $e->getMessage() // Include the error message for debugging
+        ], 500);
+    }
 }
 }
